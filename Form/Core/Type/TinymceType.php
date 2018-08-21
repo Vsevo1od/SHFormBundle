@@ -73,6 +73,11 @@ class TinymceType extends AbstractType
      */
     public function getName()
     {
-        return 'genemu_tinymce';
+	    return $this->getBlockPrefix();
     }
+
+	public function getBlockPrefix()
+	{
+		return 'genemu_tinymce';
+	}
 }

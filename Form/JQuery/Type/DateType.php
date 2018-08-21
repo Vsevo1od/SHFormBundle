@@ -106,10 +106,15 @@ class DateType extends AbstractType
     /**
      * {@inheritdoc}
      */
-    public function getName()
-    {
-        return 'genemu_jquerydate';
-    }
+	public function getName()
+	{
+		return $this->getBlockPrefix();
+	}
+
+	public function getBlockPrefix()
+	{
+		return 'genemu_jquerydate';
+	}
 
     /**
      * Create pattern Date Javascript
