@@ -27,7 +27,9 @@ class TinymceType extends AbstractType
      */
     public function buildView(FormView $view, FormInterface $form, array $options)
     {
-        $view->vars['configs'] = $options['configs'];
+    	if(isset($options['configs'])){
+		    $view->vars['configs'] = $options['configs'];
+	    }
     }
 
     /**

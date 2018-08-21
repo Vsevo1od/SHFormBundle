@@ -28,11 +28,17 @@ class DateType extends AbstractType
      */
     public function buildView(FormView $view, FormInterface $form, array $options)
     {
-        $configs = $options['configs'];
-        $years = $options['years'];
+	    if(isset($options['configs']))
+	    {
+		    $configs = $options['configs'];
+	    }
+	    if(isset($options['years']))
+	    {
+		    $years = $options['years'];
+	    }
 
         $configs['dateFormat'] = 'yy-mm-dd';
-        if ('single_text' === $options['widget']) {
+        if (isset($options['widget']) && 'single_text' === $options['widget']) {
             $dateFormat = is_int($options['format']) ? $options['format'] : BaseDateType::DEFAULT_FORMAT;
             $timeFormat = \IntlDateFormatter::NONE;
             $calendar   = \IntlDateFormatter::GREGORIAN;
@@ -51,12 +57,14 @@ class DateType extends AbstractType
             $configs['dateFormat'] = $this->getJavascriptPattern($formatter);
         }
 
-        $view->vars = array_replace($view->vars, array(
-            'min_year' => min($years),
-            'max_year' => max($years),
-            'configs' => $configs,
-            'culture' => $options['culture'],
-        ));
+	    if(isset($options['culture'])){
+		    $view->vars = array_replace($view->vars, array(
+			    'min_year' => min($years),
+			    'max_year' => max($years),
+			    'configs' => $configs,
+			    'culture' => $options['culture'],
+		    ));
+	    }
     }
 
     /**
@@ -92,7 +100,7 @@ class DateType extends AbstractType
      */
     public function getParent()
     {
-        return 'date';
+        return BaseDateType::class;
     }
 
     /**
