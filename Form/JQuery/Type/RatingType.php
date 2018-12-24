@@ -7,7 +7,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\OptionsResolver\Options;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class RatingType extends AbstractType
 {
@@ -33,7 +33,7 @@ class RatingType extends AbstractType
     /**
      * {@inheritdoc}
      */
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
             'number' => 5,
@@ -41,18 +41,16 @@ class RatingType extends AbstractType
             'expanded' => true,
             'choices' => function (Options $options) {
                 $choices = array();
-                for ($i=1; $i<=$options['number']; $i++) {
+                for ($i = 1; $i <= $options['number']; $i++) {
                     $choices[$i] = null;
                 }
                 return $choices;
             }
         ));
 
-        $resolver->setNormalizers(array(
-            'expanded' => function (Options $options, $value) {
-                return true;
-            }
-        ));
+        $resolver->setNormalizer('expanded', function (Options $options, $value) {
+            return true;
+        });
     }
 
     /**

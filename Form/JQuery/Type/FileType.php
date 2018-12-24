@@ -7,7 +7,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\OptionsResolver\Options;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 use SymfonyHackers\Bundle\FormBundle\Form\Core\EventListener\FileListener;
 use SymfonyHackers\Bundle\FormBundle\Form\JQuery\DataTransformer\FileToValueTransformer;
@@ -20,7 +20,7 @@ class FileType extends AbstractType
     /**
      * Constructs
      *
-     * @param array  $options
+     * @param array $options
      * @param string $rootDir
      */
     public function __construct(array $options, $rootDir)
@@ -39,8 +39,7 @@ class FileType extends AbstractType
         $builder
             ->addEventSubscriber(new FileListener($this->rootDir, $options['multiple']))
             ->addViewTransformer(new FileToValueTransformer($this->rootDir, $configs['folder'], $options['multiple']))
-            ->setAttribute('rootDir', $this->rootDir)
-        ;
+            ->setAttribute('rootDir', $this->rootDir);
     }
 
     /**
@@ -59,7 +58,7 @@ class FileType extends AbstractType
     /**
      * {@inheritdoc}
      */
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function configureOptions(OptionsResolver $resolver)
     {
         $configs = $this->options;
 
@@ -70,16 +69,12 @@ class FileType extends AbstractType
                 'multiple' => false,
                 'configs' => array(),
             ))
-            ->setNormalizers(array(
-                'configs' => function (Options $options, $value) use ($configs) {
-                    if (!$options['multiple']) {
-                        $value['multi'] = false;
-                    }
-
-                    return array_merge($configs, $value);
+            ->setNormalizer('configs', function (Options $options, $value) use ($configs) {
+                if (!$options['multiple']) {
+                    $value['multi'] = false;
                 }
-            ))
-        ;
+                return array_merge($configs, $value);
+            });
     }
 
     /**

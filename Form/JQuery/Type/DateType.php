@@ -6,7 +6,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\Options;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\DateType as BaseDateType;
 
 class DateType extends AbstractType
@@ -22,20 +22,20 @@ class DateType extends AbstractType
     {
         $this->options = $options;
     }
-    
+
     /**
      * {@inheritdoc}
      */
     public function buildView(FormView $view, FormInterface $form, array $options)
     {
-	    if(isset($options['configs']))
-	    {
-		    $configs = $options['configs'];
-	    }
-	    if(isset($options['years']))
-	    {
-		    $years = $options['years'];
-	    }
+        if(isset($options['configs']))
+        {
+            $configs = $options['configs'];
+        }
+        if(isset($options['years']))
+        {
+            $years = $options['years'];
+        }
 
         $configs['dateFormat'] = 'yy-mm-dd';
         if (isset($options['widget']) && 'single_text' === $options['widget']) {
@@ -57,20 +57,20 @@ class DateType extends AbstractType
             $configs['dateFormat'] = $this->getJavascriptPattern($formatter);
         }
 
-	    if(isset($options['culture'])){
-		    $view->vars = array_replace($view->vars, array(
-			    'min_year' => min($years),
-			    'max_year' => max($years),
-			    'configs' => $configs,
-			    'culture' => $options['culture'],
-		    ));
-	    }
+        if(isset($options['culture'])){
+            $view->vars = array_replace($view->vars, array(
+                'min_year' => min($years),
+                'max_year' => max($years),
+                'configs' => $configs,
+                'culture' => $options['culture'],
+            ));
+        }
     }
 
     /**
      * {@inheritdoc}
      */
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function configureOptions(OptionsResolver $resolver)
     {
         $configs = $this->options;
 
@@ -83,16 +83,14 @@ class DateType extends AbstractType
                     'dateFormat' => null,
                 ),
             ))
-            ->setNormalizers(array(
-                'configs' => function (Options $options, $value) use ($configs) {
-                    $result = array_merge($configs, $value);
-                    if ('single_text' !== $options['widget'] || isset($result['buttonImage'])) {
-                        $result['showOn'] = 'button';
-                    }
-
-                    return $result;
+            ->setNormalizer('configs', function (Options $options, $value) use ($configs) {
+                $result = array_merge($configs, $value);
+                if ('single_text' !== $options['widget'] || isset($result['buttonImage'])) {
+                    $result['showOn'] = 'button';
                 }
-            ));
+                return $result;
+            }
+            );
     }
 
     /**
@@ -106,15 +104,15 @@ class DateType extends AbstractType
     /**
      * {@inheritdoc}
      */
-	public function getName()
-	{
-		return $this->getBlockPrefix();
-	}
+    public function getName()
+    {
+        return $this->getBlockPrefix();
+    }
 
-	public function getBlockPrefix()
-	{
-		return 'genemu_jquerydate';
-	}
+    public function getBlockPrefix()
+    {
+        return 'genemu_jquerydate';
+    }
 
     /**
      * Create pattern Date Javascript

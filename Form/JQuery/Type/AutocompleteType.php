@@ -7,7 +7,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\Options;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\PropertyAccess\PropertyPath;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 
@@ -49,7 +49,7 @@ class AutocompleteType extends AbstractType
     /**
      * {@inheritdoc}
      */
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function configureOptions(OptionsResolver $resolver)
     {
         $type = $this->type;
         $registry = $this->registry;
@@ -64,8 +64,7 @@ class AutocompleteType extends AbstractType
             'document_manager' => null,
         ));
 
-        $resolver->setNormalizers(array(
-            'em' => function (Options $options, $manager) use ($registry, $type) {
+        $resolver->setNormalizer('em', function (Options $options, $manager) use ($registry, $type) {
                 if (!in_array($type, array('entity', 'document'))) {
                     return null;
                 }
@@ -80,8 +79,8 @@ class AutocompleteType extends AbstractType
                 }
 
                 return $registry->getManager($manager);
-            },
-            'suggestions' => function (Options $options, $suggestions) use ($type, $registry) {
+            });
+            $resolver->setNormalizer('suggestions', function (Options $options, $suggestions) use ($type, $registry) {
                 if (null !== $options['route_name']) {
                     return array();
                 }
@@ -110,10 +109,8 @@ class AutocompleteType extends AbstractType
                             break;
                     }
                 }
-
                 return $suggestions;
-            },
-        ));
+            });
     }
 
     /**
