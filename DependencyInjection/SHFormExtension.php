@@ -2,7 +2,7 @@
 
 namespace SymfonyHackers\Bundle\FormBundle\DependencyInjection;
 
-use Symfony\Component\DependencyInjection\DefinitionDecorator;
+use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\DependencyInjection\Reference;
@@ -213,11 +213,11 @@ class SHFormExtension extends Extension
     private function registerAutocompleteConfiguration(array $configs, ContainerBuilder $container)
     {
         $serviceId = 'genemu.form.jquery.type.autocomplete';
-        $textDef = new DefinitionDecorator($serviceId);
+        $textDef = new ChildDefinition($serviceId);
         $textDef->addArgument('text')->addTag('form.type', array('alias' => 'genemu_jqueryautocomplete_text'));
         $container->setDefinition($serviceId . '.text', $textDef);
 
-        $doctrineDef = new DefinitionDecorator($serviceId);
+        $doctrineDef = new ChildDefinition($serviceId);
         $doctrineDef
             ->addArgument('entity')
             ->addArgument(new Reference('doctrine', ContainerInterface::NULL_ON_INVALID_REFERENCE))
@@ -225,7 +225,7 @@ class SHFormExtension extends Extension
         ;
         $container->setDefinition($serviceId . '.entity', $doctrineDef);
 
-        $mongoDef = new DefinitionDecorator($serviceId);
+        $mongoDef = new ChildDefinition($serviceId);
         $mongoDef
             ->addArgument('document')
             ->addArgument(new Reference('doctrine_mongodb', ContainerInterface::NULL_ON_INVALID_REFERENCE))
@@ -240,7 +240,7 @@ class SHFormExtension extends Extension
     {
         $serviceId = 'genemu.form.jquery.type.select2';
         foreach (array_merge($this->getChoiceTypeNames(), array('hidden')) as $type) {
-            $typeDef = new DefinitionDecorator($serviceId);
+            $typeDef = new ChildDefinition($serviceId);
             $typeDef
                 ->addArgument($type)
                 ->addArgument($configs['configs'])
@@ -261,7 +261,7 @@ class SHFormExtension extends Extension
     private function loadExtendedTypes($serviceId, $name, ContainerBuilder $container)
     {
         foreach ($this->getChoiceTypeNames() as $type) {
-            $typeDef = new DefinitionDecorator($serviceId);
+            $typeDef = new ChildDefinition($serviceId);
             $typeDef->addArgument($type)->addTag('form.type', array('alias' => 'genemu_'.$name.'_'.$type));
 
             $container->setDefinition($serviceId.'.'.$type, $typeDef);
