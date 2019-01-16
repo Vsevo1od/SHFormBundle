@@ -681,3 +681,85 @@
     });
     </script>
 {% endblock %}
+
+{% block form_js_settings_div %}
+    {% spaceless %}
+        {% for child in form %}
+            {{ form_js_settings_div(child) }}
+        {% endfor %}
+    {% endspaceless %}
+{% endblock form_js_settings_div %}
+
+{% block genemu_jqueryselect2_js_settings_div %}
+    {% spaceless %}
+        <div class="genemu-js-settings"
+             data-type="select2"
+             data-id="{{ id }}"
+            {% block genemu_jqueryselect2_js_settings_div_prototype %}
+            data-configs="{{ configs|json_encode|raw }}"
+            {% endblock %}
+        ></div>
+    {% endspaceless %}
+{% endblock %}
+
+{% block genemu_jquerydate_js_settings_div %}
+    {% spaceless %}
+        <div class="genemu-js-settings"
+             data-type="date"
+             data-id="{% if widget != "single_text" %}datepicker_{% endif %}{{ id }}"
+            {% block genemu_jquerydate_js_settings_div_prototype %}
+                {% if configs is defined %}
+                    {% if configs.buttonImage is defined %}
+                        {% set configs_other = configs|merge({
+                            "buttonImage": asset(configs.buttonImage)
+                        }) %}
+                    {% else %}
+                        {% set configs_other = configs %}
+                    {% endif %}
+                {% else %}
+                    {% set configs_other = {} %}
+                {% endif %}
+
+                {% if culture is defined %}
+                    {% if culture == "en" %}
+                        {% set culture = "en-GB" %}
+                    {% endif %}
+                {% else %}
+                    {% set culture = "fr" %}
+                {% endif %}
+
+                {% if min_year is not defined %}
+                    {% set min_year = 2010 %}
+                {% endif %}
+                {% if max_year is not defined %}
+                    {% set max_year = 2030 %}
+                {% endif %}
+
+                {% set configs = {
+                            "configs_other": configs_other,
+                            "min_year": min_year,
+                            "max_year": max_year,
+                            "culture": culture
+                        } %}
+
+                {% if widget != "single_text" %}
+                    {% set configs = configs|merge({
+                        "single_text": false,
+                        "year": form.year.vars.id,
+                        "month": form.month.vars.id,
+                        "day": form.day.vars.id
+                    }) %}
+                {% else %}
+                    {% set configs = configs|merge({
+                        "single_text": true
+                    }) %}
+                {% endif %}
+                data-configs='{{ configs|json_encode|raw }}'
+            {% endblock %}
+         ></div>
+    {% endspaceless %}
+{% endblock %}
+
+{% block field_js_settings_div "" %}
+
+{% block button_js_settings_div "" %}
